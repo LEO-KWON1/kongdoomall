@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 
-const API_BASE_URL = 'https://kojkhj614.dothome.co.kr/api'; // HTTPS로 변경
+const API_BASE_URL = 'http://kojkhj614.dothome.co.kr/api'; // HTTP로 변경
 
 const AuthContext = createContext();
 

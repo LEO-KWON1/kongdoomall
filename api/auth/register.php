@@ -1,78 +1,59 @@
 <?php
-header('Content-Type: application/json');
+require_once '../config/database.php';
+require_once '../utils/response.php';
 
-// 데이터베이스 연결 설정
-$host = 'localhost';
-$dbname = 'kojkhj614';
-$username = 'kojkhj614';
-$password = 'dothome!23';
-
-try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $username, $password);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch(PDOException $e) {
-    http_response_code(500);
-    echo json_encode(['error' => '데이터베이스 연결 실패']);
-    exit;
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    sendError('Method not allowed', 405);
 }
 
 // POST 데이터 받기
 $data = json_decode(file_get_contents('php://input'), true);
 
-// 필수 필드 확인
-$required_fields = ['name', 'email', 'password'];
-foreach ($required_fields as $field) {
-    if (!isset($data[$field]) || empty($data[$field])) {
-        http_response_code(400);
-        echo json_encode(['error' => '모든 필드를 입력해주세요.']);
-        exit;
-    }
+// 필수 필드 검증
+$required = ['name', 'email', 'password'];
+$missing = validateRequiredFields($data, $required);
+if (!empty($missing)) {
+    sendError('Missing required fields: ' . implode(', ', $missing));
 }
 
 // 이메일 형식 검증
-if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
-    http_response_code(400);
-    echo json_encode(['error' => '올바른 이메일 형식을 입력해주세요.']);
-    exit;
+if (!validateEmail($data['email'])) {
+    sendError('Invalid email format');
 }
 
 // 비밀번호 길이 검증
 if (strlen($data['password']) < 6) {
-    http_response_code(400);
-    echo json_encode(['error' => '비밀번호는 6자 이상이어야 합니다.']);
-    exit;
+    sendError('Password must be at least 6 characters long');
 }
 
-// 이메일 중복 확인
-$stmt = $pdo->prepare('SELECT COUNT(*) FROM users WHERE email = ?');
-$stmt->execute([$data['email']]);
-if ($stmt->fetchColumn() > 0) {
-    http_response_code(400);
-    echo json_encode(['error' => '이미 사용 중인 이메일입니다.']);
-    exit;
-}
-
-// 비밀번호 해시화
-$hashed_password = password_hash($data['password'], PASSWORD_DEFAULT);
-
-// 사용자 생성
-$stmt = $pdo->prepare('INSERT INTO users (name, email, password) VALUES (?, ?, ?)');
 try {
-    $stmt->execute([$data['name'], $data['email'], $hashed_password]);
+    // 이메일 중복 확인
+    $stmt = $pdo->prepare('SELECT id FROM users WHERE email = ?');
+    $stmt->execute([$data['email']]);
+    if ($stmt->fetch()) {
+        sendError('Email already exists');
+    }
+
+    // 비밀번호 해시화
+    $hashedPassword = password_hash($data['password'], PASSWORD_DEFAULT);
+
+    // 사용자 생성
+    $stmt = $pdo->prepare('INSERT INTO users (name, email, password) VALUES (?, ?, ?)');
+    $stmt->execute([$data['name'], $data['email'], $hashedPassword]);
     
-    // 생성된 사용자 정보 반환
-    $user_id = $pdo->lastInsertId();
-    $response = [
+    $userId = $pdo->lastInsertId();
+
+    // 응답
+    sendResponse([
+        'message' => 'User registered successfully',
         'user' => [
-            'id' => $user_id,
+            'id' => $userId,
             'name' => $data['name'],
             'email' => $data['email']
         ]
-    ];
-    
-    echo json_encode($response);
-} catch(PDOException $e) {
-    http_response_code(500);
-    echo json_encode(['error' => '회원가입 중 오류가 발생했습니다.']);
+    ], 201);
+
+} catch (PDOException $e) {
+    sendError('Database error: ' . $e->getMessage(), 500);
 }
 ?> 

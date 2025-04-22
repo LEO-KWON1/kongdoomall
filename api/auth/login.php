@@ -1,53 +1,55 @@
 <?php
-header('Content-Type: application/json');
+require_once '../config/database.php';
+require_once '../utils/response.php';
 
-// 데이터베이스 연결 설정
-$host = 'localhost';
-$dbname = 'kojkhj614';
-$username = 'kojkhj614';
-$password = 'dothome!23';
-
-try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $username, $password);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch(PDOException $e) {
-    http_response_code(500);
-    echo json_encode(['error' => '데이터베이스 연결 실패']);
-    exit;
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    sendError('Method not allowed', 405);
 }
 
 // POST 데이터 받기
 $data = json_decode(file_get_contents('php://input'), true);
 
-if (!isset($data['email']) || !isset($data['password'])) {
-    http_response_code(400);
-    echo json_encode(['error' => '이메일과 비밀번호를 입력해주세요.']);
-    exit;
+// 필수 필드 검증
+$required = ['email', 'password'];
+$missing = validateRequiredFields($data, $required);
+if (!empty($missing)) {
+    sendError('Missing required fields: ' . implode(', ', $missing));
 }
 
-// 사용자 확인
-$stmt = $pdo->prepare('SELECT * FROM users WHERE email = ?');
-$stmt->execute([$data['email']]);
-$user = $stmt->fetch(PDO::FETCH_ASSOC);
+try {
+    // 사용자 조회
+    $stmt = $pdo->prepare('SELECT * FROM users WHERE email = ?');
+    $stmt->execute([$data['email']]);
+    $user = $stmt->fetch();
 
-if (!$user || !password_verify($data['password'], $user['password'])) {
-    http_response_code(401);
-    echo json_encode(['error' => '이메일 또는 비밀번호가 올바르지 않습니다.']);
-    exit;
+    if (!$user) {
+        sendError('Invalid email or password');
+    }
+
+    // 비밀번호 검증
+    if (!password_verify($data['password'], $user['password'])) {
+        sendError('Invalid email or password');
+    }
+
+    // JWT 토큰 생성 (실제 구현에서는 JWT 라이브러리 사용)
+    $token = base64_encode(json_encode([
+        'user_id' => $user['id'],
+        'email' => $user['email'],
+        'exp' => time() + (60 * 60 * 24) // 24시간
+    ]));
+
+    // 응답
+    sendResponse([
+        'message' => 'Login successful',
+        'token' => $token,
+        'user' => [
+            'id' => $user['id'],
+            'name' => $user['name'],
+            'email' => $user['email']
+        ]
+    ]);
+
+} catch (PDOException $e) {
+    sendError('Database error: ' . $e->getMessage(), 500);
 }
-
-// 토큰 생성 (간단한 예시)
-$token = bin2hex(random_bytes(32));
-
-// 응답 데이터
-$response = [
-    'user' => [
-        'id' => $user['id'],
-        'name' => $user['name'],
-        'email' => $user['email']
-    ],
-    'token' => $token
-];
-
-echo json_encode($response);
 ?> 
