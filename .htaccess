@@ -1,0 +1,20 @@
+# CORS 설정
+Header set Access-Control-Allow-Origin "*"
+Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+Header set Access-Control-Allow-Headers "Content-Type, Authorization, Accept"
+Header set Access-Control-Allow-Credentials "true"
+
+# OPTIONS 요청 처리
+RewriteEngine On
+RewriteCond %{REQUEST_METHOD} OPTIONS
+RewriteRule ^(.*)$ $1 [R=200,L]
+
+# PHP 에러 표시
+php_flag display_errors on
+php_value error_reporting E_ALL
+
+# 디렉토리 인덱싱 비활성화
+Options -Indexes
+
+# 기본 인덱스 파일 설정
+DirectoryIndex index.php index.html 

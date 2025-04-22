@@ -3,21 +3,89 @@
 @tailwind utilities;
 
 @layer base {
+  html {
+    font-family: 'Pretendard', sans-serif;
+    scroll-behavior: smooth;
+  }
   body {
-    @apply bg-white text-dark;
+    @apply bg-kong-brown-50 bg-kong-pattern;
   }
 }
 
 @layer components {
   .btn-primary {
-    @apply bg-primary text-white px-6 py-3 rounded-lg hover:bg-opacity-90 transition-all;
+    @apply px-4 py-2 bg-gradient-to-r from-toad-green-500 to-toad-green-600 text-white rounded-lg 
+    hover:from-toad-green-600 hover:to-toad-green-700 transition-all duration-300 
+    shadow-md hover:shadow-lg transform hover:scale-105;
   }
   
   .btn-secondary {
-    @apply bg-secondary text-dark px-6 py-3 rounded-lg hover:bg-opacity-90 transition-all;
+    @apply px-4 py-2 bg-gradient-to-r from-kong-brown-500 to-kong-brown-600 text-white rounded-lg 
+    hover:from-kong-brown-600 hover:to-kong-brown-700 transition-all duration-300 
+    shadow-md hover:shadow-lg transform hover:scale-105;
+  }
+
+  .shadow-card {
+    @apply shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-1px_rgba(0,0,0,0.06)];
+  }
+  .shadow-card-hover {
+    @apply shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1),0_4px_6px_-2px_rgba(0,0,0,0.05)];
+  }
+
+  .card {
+    @apply bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg 
+    transition-all duration-300 transform hover:scale-[1.02];
   }
   
-  .container-custom {
-    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  .input {
+    @apply w-full px-4 py-2 border border-kong-brown-300 rounded-lg 
+    focus:outline-none focus:ring-2 focus:ring-toad-green-500 focus:border-transparent 
+    transition-all duration-200;
   }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-slideIn {
+  animation: slideIn 0.5s ease-out forwards;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-pulse {
+  animation: pulse 2s infinite;
 } 

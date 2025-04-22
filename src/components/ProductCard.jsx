@@ -1,58 +1,50 @@
-import { Link } from 'react-router-dom'
-import { FiHeart, FiShoppingCart } from 'react-icons/fi'
-import { useAppContext } from '../context/AppContext'
+import { Link } from 'react-router-dom';
+import { Heart, ShoppingCart } from 'lucide-react';
+import { useApp } from '../context/AppContext';
 
 const ProductCard = ({ product }) => {
-  const { addToCart, toggleWishlist, isInWishlist } = useAppContext()
-
-  const handleWishlistClick = (e) => {
-    e.preventDefault()
-    toggleWishlist(product)
-  }
-
-  const handleCartClick = (e) => {
-    e.preventDefault()
-    addToCart(product)
-  }
+  const { addToCart, addToWishlist } = useApp();
 
   return (
-    <div className="group">
-      <Link to={`/product/${product.id}`} className="block">
-        <div className="relative aspect-square overflow-hidden rounded-lg bg-gray-100">
+    <div className="group relative bg-white rounded-xl shadow-card hover:shadow-card-hover transition-all overflow-hidden">
+      <Link to={`/products/${product.id}`}>
+        <div className="aspect-square overflow-hidden">
           <img
             src={product.image}
             alt={product.name}
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
           />
-          <div className="absolute top-2 right-2 flex space-x-2">
+        </div>
+      </Link>
+      <div className="p-4">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-sm text-gray-500">{product.brand}</span>
+          <div className="flex gap-2">
             <button
-              className={`p-2 rounded-full shadow-md transition-colors ${
-                isInWishlist(product.id)
-                  ? 'bg-primary text-white'
-                  : 'bg-white text-gray-600 hover:bg-primary hover:text-white'
-              }`}
-              onClick={handleWishlistClick}
+              onClick={() => addToWishlist(product)}
+              className="p-2 text-gray-400 hover:text-primary transition-colors"
             >
-              <FiHeart className="text-xl" />
+              <Heart className="w-5 h-5" />
             </button>
             <button
-              className="p-2 bg-white rounded-full shadow-md text-gray-600 hover:bg-primary hover:text-white transition-colors"
-              onClick={handleCartClick}
+              onClick={() => addToCart(product)}
+              className="p-2 text-gray-400 hover:text-primary transition-colors"
             >
-              <FiShoppingCart className="text-xl" />
+              <ShoppingCart className="w-5 h-5" />
             </button>
           </div>
         </div>
-        <div className="mt-3">
-          <p className="text-sm text-gray-500">{product.brand}</p>
-          <h3 className="text-base font-medium text-gray-900 line-clamp-2">{product.name}</h3>
-          <p className="mt-1 text-lg font-semibold text-gray-900">
-            {product.price.toLocaleString()}원
-          </p>
-        </div>
-      </Link>
+        <Link to={`/products/${product.id}`}>
+          <h3 className="font-medium text-gray-900 mb-2 hover:text-primary transition-colors">
+            {product.name}
+          </h3>
+        </Link>
+        <p className="text-lg font-semibold text-gray-900">
+          {product.price.toLocaleString()}원
+        </p>
+      </div>
     </div>
-  )
-}
+  );
+};
 
-export default ProductCard 
+export default ProductCard; 

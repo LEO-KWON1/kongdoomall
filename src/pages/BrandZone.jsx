@@ -1,180 +1,145 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { FiFilter, FiStar } from 'react-icons/fi'
+import { Search, Filter, ChevronDown, ChevronUp } from 'lucide-react'
 
 const BrandZone = () => {
-  const [filter, setFilter] = useState('popular')
-  const [category, setCategory] = useState('all')
+  const [showFilters, setShowFilters] = useState(false)
+  const [sortBy, setSortBy] = useState('popular')
+  const [searchQuery, setSearchQuery] = useState('')
 
   const brands = [
     {
       id: 1,
-      name: '달바',
-      logo: 'https://images.unsplash.com/photo-1612817288484-6f916006741a?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&h=300&q=80',
-      category: 'beauty',
+      name: 'Brand A',
+      logo: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+      category: '의류',
       isNew: true,
-      description: '자연주의 스킨케어 브랜드',
-      products: 50,
-      followers: 25000,
+      description: '프리미엄 의류 브랜드',
+      products: 120,
+      followers: 5000,
     },
     {
       id: 2,
-      name: '오설록',
-      logo: 'https://images.unsplash.com/photo-1564890369478-c89ca6d9cde9?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&h=300&q=80',
-      category: 'food',
+      name: 'Brand B',
+      logo: 'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+      category: '신발',
       isNew: false,
-      description: '프리미엄 차(茶) 전문 브랜드',
+      description: '트렌디한 신발 브랜드',
       products: 85,
-      followers: 42000,
+      followers: 3500,
     },
     {
       id: 3,
-      name: '오픈클로젯',
-      logo: 'https://images.unsplash.com/photo-1538688525198-9b88f6f53126?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&h=300&q=80',
-      category: 'living',
-      isNew: false,
-      description: '모던 라이프스타일 가구 브랜드',
-      products: 120,
-      followers: 31000,
-    },
-    {
-      id: 4,
-      name: '아떼',
-      logo: 'https://images.unsplash.com/photo-1522338242992-e1a54906a8da?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&h=300&q=80',
-      category: 'beauty',
+      name: 'Brand C',
+      logo: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+      category: '가방',
       isNew: true,
-      description: '비건 뷰티 선두주자',
-      products: 45,
-      followers: 18000,
-    },
-    {
-      id: 5,
-      name: '그래놀라하우스',
-      logo: 'https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&h=300&q=80',
-      category: 'food',
-      isNew: true,
-      description: '건강한 아침식사 전문',
-      products: 30,
-      followers: 15000,
-    },
-    {
-      id: 6,
-      name: '모던하우스',
-      logo: 'https://images.unsplash.com/photo-1556228453-efd6c1ff04f6?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&h=300&q=80',
-      category: 'living',
-      isNew: false,
-      description: '일상을 특별하게 만드는 홈퍼니싱',
-      products: 150,
-      followers: 38000,
+      description: '럭셔리 가방 브랜드',
+      products: 65,
+      followers: 2800,
     },
   ]
 
-  const categories = [
-    { id: 'all', name: '전체' },
-    { id: 'beauty', name: '뷰티' },
-    { id: 'food', name: '푸드' },
-    { id: 'living', name: '리빙' },
-  ]
-
+  const categories = ['전체', '의류', '신발', '가방', '악세서리']
   const filters = [
-    { id: 'popular', name: '인기순' },
-    { id: 'new', name: '신규 브랜드' },
-    { id: 'products', name: '상품 많은 순' },
-    { id: 'followers', name: '팔로워 많은 순' },
+    { id: 'popular', label: '인기순' },
+    { id: 'new', label: '신규순' },
+    { id: 'products', label: '상품 많은 순' },
+    { id: 'followers', label: '팔로워 많은 순' },
   ]
-
-  const filteredBrands = brands
-    .filter(brand => category === 'all' || brand.category === category)
-    .sort((a, b) => {
-      switch (filter) {
-        case 'popular':
-          return b.followers - a.followers
-        case 'new':
-          return b.isNew - a.isNew
-        case 'products':
-          return b.products - a.products
-        case 'followers':
-          return b.followers - a.followers
-        default:
-          return 0
-      }
-    })
 
   return (
-    <div className="container-custom py-8">
-      <h1 className="text-2xl font-bold mb-8">브랜드관</h1>
-
-      {/* Filters */}
-      <div className="flex flex-wrap gap-4 mb-8">
-        <div className="flex items-center space-x-2">
-          <FiFilter className="text-gray-500" />
-          <span className="text-gray-700">카테고리</span>
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="max-w-7xl mx-auto px-4">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">브랜드존</h1>
+          <p className="text-gray-600 max-w-2xl mx-auto">
+            프리미엄 브랜드의 특별한 제품들을 만나보세요
+          </p>
         </div>
-        {categories.map((cat) => (
-          <button
-            key={cat.id}
-            className={`px-4 py-2 rounded-full ${
-              category === cat.id
-                ? 'bg-primary text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            }`}
-            onClick={() => setCategory(cat.id)}
-          >
-            {cat.name}
-          </button>
-        ))}
-      </div>
 
-      <div className="flex flex-wrap gap-4 mb-8">
-        <div className="flex items-center space-x-2">
-          <FiStar className="text-gray-500" />
-          <span className="text-gray-700">정렬</span>
+        {/* Search and Filters */}
+        <div className="flex flex-col md:flex-row gap-4 mb-8">
+          <div className="relative flex-1">
+            <input
+              type="text"
+              placeholder="브랜드 검색"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full px-4 py-2 pl-10 pr-4 rounded-full border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+          </div>
+          <div className="flex items-center space-x-4">
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className="flex items-center space-x-2 px-4 py-2 border border-gray-200 rounded-full hover:border-primary"
+            >
+              <Filter className="w-5 h-5" />
+              <span>필터</span>
+              {showFilters ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+            </button>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="px-4 py-2 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-primary"
+            >
+              {filters.map((filter) => (
+                <option key={filter.id} value={filter.id}>
+                  {filter.label}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
-        {filters.map((f) => (
-          <button
-            key={f.id}
-            className={`px-4 py-2 rounded-full ${
-              filter === f.id
-                ? 'bg-primary text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            }`}
-            onClick={() => setFilter(f.id)}
-          >
-            {f.name}
-          </button>
-        ))}
-      </div>
 
-      {/* Brand Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredBrands.map((brand) => (
-          <Link
-            key={brand.id}
-            to={`/brand/${brand.id}`}
-            className="group border rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
-          >
-            <div className="relative">
-              <img
-                src={brand.logo}
-                alt={brand.name}
-                className="w-full h-48 object-cover"
-              />
-              {brand.isNew && (
-                <span className="absolute top-2 right-2 bg-primary text-white px-2 py-1 rounded-full text-sm">
-                  NEW
-                </span>
-              )}
-            </div>
-            <div className="p-6">
-              <h2 className="text-xl font-semibold mb-2">{brand.name}</h2>
-              <p className="text-gray-600 mb-4">{brand.description}</p>
-              <div className="flex justify-between text-sm text-gray-500">
-                <span>상품 {brand.products}개</span>
-                <span>팔로워 {brand.followers.toLocaleString()}명</span>
+        {/* Categories */}
+        <div className="flex flex-wrap gap-2 mb-8">
+          {categories.map((category) => (
+            <button
+              key={category}
+              className="px-4 py-2 rounded-full border border-gray-200 hover:border-primary hover:text-primary transition-colors"
+            >
+              {category}
+            </button>
+          ))}
+        </div>
+
+        {/* Brands Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {brands.map((brand) => (
+            <Link
+              key={brand.id}
+              to={`/brand/${brand.id}`}
+              className="group bg-white rounded-2xl shadow-card hover:shadow-card-hover transition-all overflow-hidden"
+            >
+              <div className="relative aspect-square">
+                <img
+                  src={brand.logo}
+                  alt={brand.name}
+                  className="w-full h-full object-cover"
+                />
+                {brand.isNew && (
+                  <span className="absolute top-4 right-4 px-3 py-1 bg-primary text-white text-sm rounded-full">
+                    NEW
+                  </span>
+                )}
               </div>
-            </div>
-          </Link>
-        ))}
+              <div className="p-6 space-y-4">
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-900">{brand.name}</h3>
+                  <p className="text-gray-500">{brand.category}</p>
+                </div>
+                <p className="text-gray-600">{brand.description}</p>
+                <div className="flex items-center justify-between text-sm text-gray-500">
+                  <span>상품 {brand.products}개</span>
+                  <span>팔로워 {brand.followers.toLocaleString()}</span>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
       </div>
     </div>
   )

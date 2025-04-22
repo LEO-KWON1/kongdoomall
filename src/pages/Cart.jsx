@@ -1,131 +1,317 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { FiTrash2 } from 'react-icons/fi'
+import { Trash2, ChevronLeft, ChevronDown, ChevronUp } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { useApp } from '../context/AppContext'
 
 const Cart = () => {
-  const [items, setItems] = useState([
-    {
-      id: 1,
-      image: '/images/product1.jpg',
-      name: '상품명 1',
-      brand: '브랜드명',
-      price: 15000,
-      quantity: 1,
-    },
-    {
-      id: 2,
-      image: '/images/product2.jpg',
-      name: '상품명 2',
-      brand: '브랜드명',
-      price: 25000,
-      quantity: 2,
-    },
-  ])
+  const { cart, removeFromCart, updateCartQuantity } = useApp()
+  const [showCoupon, setShowCoupon] = useState(false)
+  const [couponCode, setCouponCode] = useState('')
+  const [appliedCoupon, setAppliedCoupon] = useState(null)
+  const [selectedItems, setSelectedItems] = useState(cart.map(item => ({ ...item, selected: true })))
+
+  const coupons = [
+    { code: 'WELCOME10', discount: 10, type: 'percent' },
+    { code: 'FREESHIP', discount: 3000, type: 'fixed' },
+  ]
 
   const handleQuantityChange = (id, newQuantity) => {
-    setItems(items.map(item =>
+    updateCartQuantity(id, newQuantity)
+    setSelectedItems(prev => prev.map(item =>
       item.id === id ? { ...item, quantity: Math.max(1, newQuantity) } : item
     ))
   }
 
-  const handleRemove = (id) => {
-    setItems(items.filter(item => item.id !== id))
+  const handleRemoveItem = (id) => {
+    removeFromCart(id)
+    setSelectedItems(prev => prev.filter(item => item.id !== id))
   }
 
-  const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
-  const shippingFee = subtotal > 50000 ? 0 : 3000
-  const total = subtotal + shippingFee
+  const toggleSelect = (id) => {
+    setSelectedItems(prev =>
+      prev.map(item =>
+        item.id === id ? { ...item, selected: !item.selected } : item
+      )
+    )
+  }
+
+  const selectAll = () => {
+    const allSelected = selectedItems.every(item => item.selected)
+    setSelectedItems(prev =>
+      prev.map(item => ({ ...item, selected: !allSelected }))
+    )
+  }
+
+  const applyCoupon = () => {
+    const coupon = coupons.find(c => c.code === couponCode)
+    if (coupon) {
+      setAppliedCoupon(coupon)
+      setShowCoupon(false)
+    }
+  }
+
+  const removeCoupon = () => {
+    setAppliedCoupon(null)
+    setCouponCode('')
+  }
+
+  const selectedCartItems = selectedItems.filter(item => item.selected)
+  const subtotal = selectedCartItems.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  )
+
+  const shippingFee = subtotal >= 50000 ? 0 : 3000
+  const couponDiscount = appliedCoupon
+    ? appliedCoupon.type === 'percent'
+      ? (subtotal * appliedCoupon.discount) / 100
+      : appliedCoupon.discount
+    : 0
+
+  const totalPrice = subtotal + shippingFee - couponDiscount
+
+  if (cart.length === 0) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-8">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center py-12">
+            <h2 className="text-2xl font-semibold text-gray-900 mb-4">장바구니가 비어있습니다</h2>
+            <Link
+              to="/products"
+              className="inline-flex items-center px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary-dark"
+            >
+              쇼핑하러 가기
+            </Link>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
-    <div className="container-custom py-8">
-      <h1 className="text-2xl font-bold mb-8">장바구니</h1>
-
-      {items.length === 0 ? (
-        <div className="text-center py-12">
-          <p className="text-gray-500 mb-4">장바구니가 비어있습니다.</p>
-          <Link to="/" className="btn-primary inline-block">
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="flex items-center mb-8">
+          <Link
+            to="/products"
+            className="flex items-center text-gray-600 hover:text-primary transition-colors"
+          >
+            <ChevronLeft className="w-5 h-5 mr-1" />
             쇼핑 계속하기
           </Link>
         </div>
-      ) : (
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Cart Items */}
-          <div className="lg:col-span-2">
-            <div className="space-y-4">
-              {items.map((item) => (
-                <div
-                  key={item.id}
-                  className="flex items-center p-4 border rounded-lg"
-                >
-                  <img
-                    src={item.image}
-                    alt={item.name}
-                    className="w-24 h-24 object-cover rounded-lg"
-                  />
-                  <div className="flex-1 ml-4">
-                    <p className="text-gray-500 text-sm">{item.brand}</p>
-                    <h3 className="font-medium">{item.name}</h3>
-                    <p className="text-lg font-semibold">
-                      {item.price.toLocaleString()}원
-                    </p>
-                  </div>
-                  <div className="flex items-center space-x-4">
-                    <div className="flex items-center space-x-2">
-                      <button
-                        className="w-8 h-8 border rounded-full flex items-center justify-center"
-                        onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
-                      >
-                        -
-                      </button>
-                      <span className="w-8 text-center">{item.quantity}</span>
-                      <button
-                        className="w-8 h-8 border rounded-full flex items-center justify-center"
-                        onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
-                      >
-                        +
-                      </button>
-                    </div>
-                    <button
-                      className="text-gray-400 hover:text-red-500"
-                      onClick={() => handleRemove(item.id)}
-                    >
-                      <FiTrash2 className="text-xl" />
-                    </button>
-                  </div>
-                </div>
-              ))}
+          <div className="lg:col-span-2 space-y-4">
+            <div className="flex items-center justify-between">
+              <h1 className="text-2xl font-semibold text-gray-900">장바구니</h1>
+              <button
+                onClick={selectAll}
+                className="text-sm text-gray-600 hover:text-primary transition-colors"
+              >
+                {selectedItems.every((item) => item.selected)
+                  ? '전체 선택 해제'
+                  : '전체 선택'}
+              </button>
             </div>
+            {selectedItems.length === 0 ? (
+              <div className="bg-white rounded-2xl shadow-card p-8 text-center">
+                <p className="text-gray-600">장바구니가 비어있습니다.</p>
+                <Link
+                  to="/products"
+                  className="inline-block mt-4 px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors"
+                >
+                  쇼핑하러 가기
+                </Link>
+              </div>
+            ) : (
+              <AnimatePresence>
+                {selectedItems.map((item) => (
+                  <motion.div
+                    key={item.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    className="bg-white rounded-2xl shadow-card p-6 flex items-center space-x-6"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={item.selected}
+                      onChange={() => toggleSelect(item.id)}
+                      className="w-5 h-5 text-primary rounded border-gray-300"
+                    />
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className="w-24 h-24 object-cover rounded-lg"
+                    />
+                    <div className="flex-1">
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <p className="text-sm text-gray-500">{item.brand}</p>
+                          <h3 className="text-lg font-medium text-gray-900">
+                            {item.name}
+                          </h3>
+                          <p className="text-primary font-semibold mt-1">
+                            {item.price.toLocaleString()}원
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => handleRemoveItem(item.id)}
+                          className="text-gray-400 hover:text-red-500 transition-colors"
+                        >
+                          <Trash2 className="w-5 h-5" />
+                        </button>
+                      </div>
+                      <div className="flex items-center space-x-4 mt-4">
+                        <button
+                          onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
+                          className="p-2 border border-gray-200 rounded-lg hover:border-primary transition-colors"
+                        >
+                          -
+                        </button>
+                        <span className="w-12 text-center">{item.quantity}</span>
+                        <button
+                          onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
+                          className="p-2 border border-gray-200 rounded-lg hover:border-primary transition-colors"
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            )}
           </div>
 
           {/* Order Summary */}
           <div className="lg:col-span-1">
-            <div className="border rounded-lg p-6">
-              <h2 className="text-lg font-semibold mb-4">주문 정보</h2>
+            <div className="bg-white rounded-2xl shadow-card p-6 sticky top-8">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                주문 요약
+              </h2>
               <div className="space-y-4">
                 <div className="flex justify-between">
-                  <span>상품 금액</span>
-                  <span>{subtotal.toLocaleString()}원</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>배송비</span>
-                  <span>
-                    {shippingFee === 0
-                      ? '무료'
-                      : `${shippingFee.toLocaleString()}원`}
+                  <span className="text-gray-600">상품 금액</span>
+                  <span className="text-gray-900">
+                    {subtotal.toLocaleString()}원
                   </span>
                 </div>
+
+                <div className="flex justify-between">
+                  <span className="text-gray-600">배송비</span>
+                  <span className="text-gray-900">
+                    {shippingFee === 0 ? (
+                      <span className="text-primary">무료</span>
+                    ) : (
+                      `${shippingFee.toLocaleString()}원`
+                    )}
+                  </span>
+                </div>
+
+                {appliedCoupon && (
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center space-x-2">
+                      <span className="text-gray-600">할인</span>
+                      <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded">
+                        {appliedCoupon.code}
+                      </span>
+                      <button
+                        onClick={removeCoupon}
+                        className="text-gray-400 hover:text-red-500 transition-colors"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                    <span className="text-primary">
+                      -{couponDiscount.toLocaleString()}원
+                    </span>
+                  </div>
+                )}
+
                 <div className="border-t pt-4">
-                  <div className="flex justify-between font-semibold">
-                    <span>총 주문금액</span>
-                    <span>{total.toLocaleString()}원</span>
+                  <div className="flex justify-between">
+                    <span className="font-semibold text-gray-900">
+                      총 주문 금액
+                    </span>
+                    <span className="font-semibold text-primary">
+                      {totalPrice.toLocaleString()}원
+                    </span>
                   </div>
                 </div>
-                <button className="btn-primary w-full">주문하기</button>
+
+                <div className="space-y-4">
+                  <button
+                    onClick={() => setShowCoupon(!showCoupon)}
+                    className="w-full flex items-center justify-between text-gray-600 hover:text-primary transition-colors"
+                  >
+                    <span>쿠폰 적용</span>
+                    {showCoupon ? (
+                      <ChevronUp className="w-5 h-5" />
+                    ) : (
+                      <ChevronDown className="w-5 h-5" />
+                    )}
+                  </button>
+
+                  <AnimatePresence>
+                    {showCoupon && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="space-y-2"
+                      >
+                        <div className="flex space-x-2">
+                          <input
+                            type="text"
+                            value={couponCode}
+                            onChange={(e) => setCouponCode(e.target.value)}
+                            placeholder="쿠폰 코드 입력"
+                            className="flex-1 px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-primary"
+                          />
+                          <button
+                            onClick={applyCoupon}
+                            className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors"
+                          >
+                            적용
+                          </button>
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          사용 가능한 쿠폰:
+                          <ul className="mt-1 space-y-1">
+                            {coupons.map((coupon) => (
+                              <li key={coupon.code}>
+                                {coupon.code} -{' '}
+                                {coupon.type === 'percent'
+                                  ? `${coupon.discount}% 할인`
+                                  : `${coupon.discount.toLocaleString()}원 할인`}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                <button
+                  disabled={selectedCartItems.length === 0}
+                  className={`w-full py-3 rounded-lg transition-colors ${
+                    selectedCartItems.length === 0
+                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      : 'bg-primary text-white hover:bg-primary-dark'
+                  }`}
+                >
+                  {selectedCartItems.length}개 상품 주문하기
+                </button>
               </div>
             </div>
           </div>
         </div>
-      )}
+      </div>
     </div>
   )
 }

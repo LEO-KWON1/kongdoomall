@@ -1,176 +1,198 @@
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { Swiper, SwiperSlide } from 'swiper/react'
-import { Navigation, Thumbs } from 'swiper/modules'
-import 'swiper/css'
-import 'swiper/css/navigation'
-import 'swiper/css/thumbs'
-import { FiHeart, FiShoppingCart } from 'react-icons/fi'
+import { Heart, ShoppingBag, Truck, Shield, ArrowLeft } from 'lucide-react'
+import { motion } from 'framer-motion'
+import Button from '../components/common/Button'
+import { useApp } from '../context/AppContext'
 
 const ProductDetail = () => {
   const { id } = useParams()
+  const { products, addToCart, toggleWishlist } = useApp()
+  const [selectedSize, setSelectedSize] = useState('')
   const [quantity, setQuantity] = useState(1)
-  const [thumbsSwiper, setThumbsSwiper] = useState(null)
 
-  // 임시 데이터
-  const product = {
-    id: 1,
-    images: [
-      '/images/product1.jpg',
-      '/images/product2.jpg',
-      '/images/product3.jpg',
-    ],
-    brand: '브랜드명',
-    name: '상품명',
-    price: 15000,
-    discount: 20,
-    description: '상품 상세 설명이 들어갑니다.',
-    reviews: [
-      {
-        id: 1,
-        user: '사용자1',
-        rating: 5,
-        content: '좋은 상품이에요!',
-        images: ['/images/review1.jpg'],
-        date: '2024-03-01',
-      },
-    ],
-  }
+  // Find the product from the products array
+  const product = products.find(p => p.id === parseInt(id))
 
-  const discountedPrice = product.price * (1 - product.discount / 100)
-
-  return (
-    <div className="container-custom py-8">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Image Gallery */}
-        <div>
-          <Swiper
-            modules={[Navigation, Thumbs]}
-            thumbs={{ swiper: thumbsSwiper }}
-            navigation
-            className="mb-4"
+  // If product is not found, show loading or error state
+  if (!product) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">상품을 찾을 수 없습니다</h1>
+          <button
+            onClick={() => window.history.back()}
+            className="inline-flex items-center text-primary hover:text-primary-dark"
           >
-            {product.images.map((image, index) => (
-              <SwiperSlide key={index}>
-                <img
-                  src={image}
-                  alt={`${product.name} ${index + 1}`}
-                  className="w-full aspect-square object-cover rounded-lg"
-                />
-              </SwiperSlide>
-            ))}
-          </Swiper>
-          <Swiper
-            modules={[Thumbs]}
-            watchSlidesProgress
-            onSwiper={setThumbsSwiper}
-            spaceBetween={8}
-            slidesPerView={4}
-            className="h-24"
-          >
-            {product.images.map((image, index) => (
-              <SwiperSlide key={index}>
-                <img
-                  src={image}
-                  alt={`${product.name} ${index + 1}`}
-                  className="w-full h-full object-cover rounded-lg"
-                />
-              </SwiperSlide>
-            ))}
-          </Swiper>
-        </div>
-
-        {/* Product Info */}
-        <div>
-          <div className="mb-6">
-            <p className="text-gray-500 mb-2">{product.brand}</p>
-            <h1 className="text-2xl font-bold mb-4">{product.name}</h1>
-            <div className="flex items-center space-x-4 mb-4">
-              <span className="text-3xl font-bold text-primary">
-                {discountedPrice.toLocaleString()}원
-              </span>
-              {product.discount > 0 && (
-                <>
-                  <span className="text-gray-500 line-through">
-                    {product.price.toLocaleString()}원
-                  </span>
-                  <span className="text-primary font-bold">{product.discount}%</span>
-                </>
-              )}
-            </div>
-            <p className="text-gray-600">{product.description}</p>
-          </div>
-
-          {/* Quantity Selector */}
-          <div className="mb-6">
-            <label className="block text-gray-700 mb-2">수량</label>
-            <div className="flex items-center space-x-4">
-              <button
-                className="w-8 h-8 border rounded-full flex items-center justify-center"
-                onClick={() => setQuantity(Math.max(1, quantity - 1))}
-              >
-                -
-              </button>
-              <span className="w-12 text-center">{quantity}</span>
-              <button
-                className="w-8 h-8 border rounded-full flex items-center justify-center"
-                onClick={() => setQuantity(quantity + 1)}
-              >
-                +
-              </button>
-            </div>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex space-x-4">
-            <button className="btn-primary flex-1 flex items-center justify-center space-x-2">
-              <FiShoppingCart />
-              <span>장바구니에 담기</span>
-            </button>
-            <button className="btn-secondary flex-1">바로 구매하기</button>
-          </div>
+            <ArrowLeft className="w-5 h-5 mr-2" />
+            뒤로가기
+          </button>
         </div>
       </div>
+    )
+  }
 
-      {/* Reviews */}
-      <div className="mt-12">
-        <h2 className="text-2xl font-bold mb-6">리뷰</h2>
-        <div className="space-y-6">
-          {product.reviews.map((review) => (
-            <div key={review.id} className="border rounded-lg p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <p className="font-medium">{review.user}</p>
-                  <p className="text-gray-500 text-sm">{review.date}</p>
-                </div>
-                <div className="flex">
-                  {[...Array(5)].map((_, i) => (
-                    <span
-                      key={i}
-                      className={`text-xl ${
-                        i < review.rating ? 'text-yellow-400' : 'text-gray-300'
+  const handleQuantityChange = (change) => {
+    const newQuantity = quantity + change
+    if (newQuantity >= 1 && newQuantity <= 10) {
+      setQuantity(newQuantity)
+    }
+  }
+
+  const handleAddToCart = () => {
+    if (!selectedSize) {
+      alert('사이즈를 선택해주세요')
+      return
+    }
+    addToCart({ ...product, size: selectedSize, quantity })
+  }
+
+  const features = [
+    {
+      icon: Truck,
+      title: '무료 배송',
+      description: '3만원 이상 구매 시'
+    },
+    {
+      icon: Shield,
+      title: '안전한 결제',
+      description: '암호화된 결제 시스템'
+    }
+  ]
+
+  return (
+    <div className="min-h-screen bg-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* 뒤로가기 버튼 */}
+        <button
+          onClick={() => window.history.back()}
+          className="flex items-center text-kong-gray-600 hover:text-kong-gray-900 mb-8"
+        >
+          <ArrowLeft className="w-5 h-5 mr-2" />
+          뒤로가기
+        </button>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* 상품 이미지 */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5 }}
+            className="space-y-4"
+          >
+            <div className="aspect-square rounded-2xl overflow-hidden">
+              <img
+                src={product.image}
+                alt={product.name}
+                className="w-full h-full object-cover"
+              />
+            </div>
+            {product.additionalImages && (
+              <div className="grid grid-cols-2 gap-4">
+                {product.additionalImages.map((image, index) => (
+                  <div key={index} className="aspect-square rounded-xl overflow-hidden">
+                    <img
+                      src={image}
+                      alt={`${product.name} ${index + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+          </motion.div>
+
+          {/* 상품 정보 */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5 }}
+            className="space-y-6"
+          >
+            <div>
+              <h1 className="text-3xl font-bold text-kong-gray-900">{product.name}</h1>
+              <p className="text-lg text-kong-gray-600 mt-2">{product.brand}</p>
+            </div>
+
+            <p className="text-2xl font-bold text-kong-gray-900">
+              {product.price.toLocaleString()}원
+            </p>
+
+            <p className="text-kong-gray-600">{product.description}</p>
+
+            {/* 사이즈 선택 */}
+            {product.sizes && (
+              <div>
+                <h3 className="text-sm font-medium text-kong-gray-900 mb-3">사이즈</h3>
+                <div className="grid grid-cols-4 gap-2">
+                  {product.sizes.map((size) => (
+                    <button
+                      key={size}
+                      onClick={() => setSelectedSize(size)}
+                      className={`py-2 text-center rounded-md border ${
+                        selectedSize === size
+                          ? 'border-kong-gold bg-kong-gold text-white'
+                          : 'border-kong-gray-300 text-kong-gray-700 hover:border-kong-gold'
                       }`}
                     >
-                      ★
-                    </span>
+                      {size}
+                    </button>
                   ))}
                 </div>
               </div>
-              <p className="mb-4">{review.content}</p>
-              {review.images && (
-                <div className="flex space-x-4">
-                  {review.images.map((image, index) => (
-                    <img
-                      key={index}
-                      src={image}
-                      alt={`리뷰 이미지 ${index + 1}`}
-                      className="w-24 h-24 object-cover rounded-lg"
-                    />
-                  ))}
-                </div>
-              )}
+            )}
+
+            {/* 수량 선택 */}
+            <div>
+              <h3 className="text-sm font-medium text-kong-gray-900 mb-3">수량</h3>
+              <div className="flex items-center space-x-4">
+                <button
+                  onClick={() => handleQuantityChange(-1)}
+                  className="w-8 h-8 rounded-full border border-kong-gray-300 flex items-center justify-center hover:border-kong-gold"
+                >
+                  -
+                </button>
+                <span className="text-kong-gray-900">{quantity}</span>
+                <button
+                  onClick={() => handleQuantityChange(1)}
+                  className="w-8 h-8 rounded-full border border-kong-gray-300 flex items-center justify-center hover:border-kong-gold"
+                >
+                  +
+                </button>
+              </div>
             </div>
-          ))}
+
+            {/* 구매 버튼 */}
+            <div className="flex space-x-4">
+              <Button variant="primary" className="flex-1" onClick={handleAddToCart}>
+                장바구니
+              </Button>
+              <Button variant="outline" className="flex-1">
+                바로구매
+              </Button>
+              <button 
+                onClick={() => toggleWishlist(product)}
+                className="p-4 rounded-full border border-kong-gray-300 hover:border-kong-gold"
+              >
+                <Heart className="w-6 h-6 text-kong-gray-600" />
+              </button>
+            </div>
+
+            {/* 배송 정보 */}
+            <div className="border-t border-kong-gray-200 pt-6 mt-8">
+              <div className="grid grid-cols-2 gap-4">
+                {features.map((feature) => (
+                  <div key={feature.title} className="flex items-start space-x-3">
+                    <feature.icon className="w-5 h-5 text-kong-gold" />
+                    <div>
+                      <h4 className="text-sm font-medium text-kong-gray-900">{feature.title}</h4>
+                      <p className="text-sm text-kong-gray-500">{feature.description}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </motion.div>
         </div>
       </div>
     </div>
