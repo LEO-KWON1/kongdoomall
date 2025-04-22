@@ -4,10 +4,12 @@
   "version": "0.0.0",
   "type": "module",
   "description": "KongDoo Mall - SNS based prosumer shopping mall",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
   "dependencies": {
