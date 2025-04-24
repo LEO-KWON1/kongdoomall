@@ -50,7 +50,7 @@ const Home = () => {
     },
     {
       id: 2,
-      image: 'https://images.unsplash.com/photo-1445205170230-053b83016050?q=80&w=2071',
+      image: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=2070',
       title: '새로운 컬렉션 출시',
       description: '2024 봄/여름 신상품을 만나보세요',
       bgColor: 'bg-gray-200',
