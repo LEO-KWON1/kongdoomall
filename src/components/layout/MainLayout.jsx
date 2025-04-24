@@ -202,14 +202,10 @@ const MainLayout = ({ children }) => {
                       {section.title}
                     </div>
                     {section.items.map((item) => (
-                      <Button
+                      <Link
                         key={item.name}
-                        variant="ghost"
-                        size="lg"
-                        as={Link}
                         to={item.link}
-                        fullWidth
-                        className="justify-between !rounded-none !p-4 hover:!bg-gray-50"
+                        className="flex items-center justify-between px-4 py-4 w-full hover:bg-gray-50 group transition-colors"
                       >
                         <div className="text-left">
                           <div className="font-medium text-gray-900 group-hover:text-primary transition-colors">
@@ -220,7 +216,7 @@ const MainLayout = ({ children }) => {
                           </div>
                         </div>
                         <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-primary transition-colors" />
-                      </Button>
+                      </Link>
                     ))}
                   </div>
                 ))}
