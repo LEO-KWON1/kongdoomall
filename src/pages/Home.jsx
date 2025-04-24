@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Autoplay, Pagination, Navigation } from 'swiper/modules';
+import { Autoplay, Pagination, Navigation, EffectFade } from 'swiper/modules';
+import 'swiper/css/effect-fade';
 import { Shirt, Footprints, ShoppingBag, Gem } from 'lucide-react';
 import Button from '../components/common/Button';
 
@@ -63,16 +64,19 @@ const Home = () => {
       {/* 히어로 섹션 */}
       <section className="relative h-screen">
         <Swiper
-          modules={[Autoplay, Pagination, Navigation]}
+          modules={[Autoplay, Pagination, Navigation, EffectFade]}
           spaceBetween={0}
           slidesPerView={1}
           autoplay={{ delay: 5000 }}
           pagination={{ clickable: true }}
           navigation
           className="h-full"
+          loop={true}
+          effect="fade"
+          fadeEffect={{ crossFade: true }}
         >
           {heroImages.map((slide) => (
-            <SwiperSlide key={slide.id}>
+            <SwiperSlide key={slide.id} className="relative">
               <div
                 className={`h-full w-full ${!slide.customBackground ? 'bg-cover bg-center' : ''}`}
                 style={!slide.customBackground ? { backgroundImage: `url(${slide.image})` } : {}}
