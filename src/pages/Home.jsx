@@ -2,6 +2,9 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination, Navigation, EffectFade } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
 import 'swiper/css/effect-fade';
 import { Shirt, Footprints, ShoppingBag, Gem } from 'lucide-react';
 import Button from '../components/common/Button';
@@ -62,23 +65,24 @@ const Home = () => {
   return (
     <>
       {/* 히어로 섹션 */}
-      <section className="relative h-screen">
+      <section className="relative h-screen w-full overflow-hidden">
         <Swiper
           modules={[Autoplay, Pagination, Navigation, EffectFade]}
           spaceBetween={0}
           slidesPerView={1}
-          autoplay={{ delay: 5000 }}
+          autoplay={{ delay: 5000, disableOnInteraction: false }}
           pagination={{ clickable: true }}
           navigation
-          className="h-full"
+          className="h-full w-full"
           loop={true}
           effect="fade"
           fadeEffect={{ crossFade: true }}
+          speed={1000}
         >
           {heroImages.map((slide) => (
-            <SwiperSlide key={slide.id} className="relative">
+            <SwiperSlide key={slide.id} className="relative w-full h-full">
               <div
-                className={`h-full w-full ${!slide.customBackground ? 'bg-cover bg-center' : ''}`}
+                className={`absolute inset-0 w-full h-full ${!slide.customBackground ? 'bg-cover bg-center' : ''}`}
                 style={!slide.customBackground ? { backgroundImage: `url(${slide.image})` } : {}}
               >
                 {slide.customBackground ? (
