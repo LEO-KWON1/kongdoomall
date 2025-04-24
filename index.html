@@ -2,7 +2,7 @@
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="icon" type="image/svg+xml" href="/kongdoomall/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>콩두몰 - KongDoo Mall</title>
     <link
@@ -22,11 +22,19 @@
             l.pathname.slice(0, -1) + decoded + l.hash
           );
         }
+        // /kongdoomall 경로 처리
         var segment = '/kongdoomall';
         if (l.pathname.indexOf(segment) === 0) {
-          window.history.replaceState(null, null,
-            segment + '/' + l.pathname.slice(segment.length + 1) + l.search + l.hash
-          );
+          var rest = l.pathname.slice(segment.length);
+          if (rest === '' || rest === '/') {
+            window.history.replaceState(null, null,
+              segment + '/' + l.search + l.hash
+            );
+          } else {
+            window.history.replaceState(null, null,
+              segment + rest + l.search + l.hash
+            );
+          }
         }
       }(window.location))
     </script>

@@ -26,7 +26,8 @@ export default defineConfig({
           'ui': ['@headlessui/react', '@heroicons/react', 'lucide-react']
         }
       }
-    }
+    },
+    assetsDir: 'assets'
   },
   optimizeDeps: {
     include: ['react', 'react-dom']
