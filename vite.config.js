@@ -15,10 +15,23 @@ export default defineConfig({
     }
   },
   build: {
-    sourcemap: true,
-    minify: false
+    outDir: 'dist',
+    sourcemap: false,
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true
+      }
+    },
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'react-router-dom'],
+          ui: ['@headlessui/react', '@heroicons/react', 'lucide-react']
+        }
+      }
+    }
   },
   esbuild: {
-    jsxInject: `import React from 'react'`
-  }
-}) 
+    jsxInject: `
