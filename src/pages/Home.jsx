@@ -1,11 +1,10 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Autoplay, Pagination, Navigation, EffectFade } from 'swiper/modules';
+import { Autoplay, Pagination, Navigation } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
-import 'swiper/css/effect-fade';
 import { Shirt, Footprints, ShoppingBag, Gem } from 'lucide-react';
 import Button from '../components/common/Button';
 
@@ -47,67 +46,48 @@ const Home = () => {
       image: '/images/hero-1.jpg',
       title: '프리미엄 브랜드를 만나다',
       description: '최고의 품질과 스타일을 제공하는 콩두몰',
+      bgColor: 'bg-gray-200',
     },
     {
       id: 2,
       image: '/images/hero-2.jpg',
       title: '새로운 컬렉션 출시',
       description: '2024 봄/여름 신상품을 만나보세요',
+      bgColor: 'bg-gray-300',
     },
     {
       id: 3,
       title: '특별한 혜택',
       description: '신규 회원을 위한 다양한 할인 혜택',
-      customBackground: true,
+      bgColor: 'bg-gray-800',
     },
   ];
 
   return (
     <>
       {/* 히어로 섹션 */}
-      <section className="relative h-screen w-full overflow-hidden">
+      <section className="relative h-screen w-full">
         <Swiper
-          modules={[Autoplay, Pagination, Navigation, EffectFade]}
+          modules={[Autoplay, Pagination, Navigation]}
           spaceBetween={0}
           slidesPerView={1}
           autoplay={{ delay: 5000, disableOnInteraction: false }}
           pagination={{ clickable: true }}
           navigation
-          className="h-full w-full"
           loop={true}
-          effect="fade"
-          fadeEffect={{ crossFade: true }}
-          speed={1000}
+          className="h-full"
         >
           {heroImages.map((slide) => (
-            <SwiperSlide key={slide.id} className="relative w-full h-full">
-              <div
-                className={`absolute inset-0 w-full h-full ${!slide.customBackground ? 'bg-cover bg-center' : ''}`}
-                style={!slide.customBackground ? { backgroundImage: `url(${slide.image})` } : {}}
-              >
-                {slide.customBackground ? (
-                  // 특별한 혜택 슬라이드의 커스텀 배경
-                  <div className="absolute inset-0">
-                    {/* 기본 그라데이션 */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-kong-gold/20 via-kong-black to-kong-black" />
-                    
-                    {/* 패턴 오버레이 */}
-                    <div className="absolute inset-0 opacity-10"
-                      style={{
-                        backgroundImage: `radial-gradient(circle at 2px 2px, rgba(255,255,255,0.15) 1px, transparent 0)`,
-                        backgroundSize: '40px 40px',
-                      }}
-                    />
-                    
-                    {/* 하이라이트 효과 */}
-                    <div className="absolute inset-0">
-                      <div className="absolute top-0 left-1/4 w-1/2 h-1/2 bg-kong-gold/10 blur-[100px] rounded-full" />
-                      <div className="absolute bottom-0 right-1/4 w-1/2 h-1/2 bg-kong-gold/5 blur-[100px] rounded-full" />
-                    </div>
-                  </div>
-                ) : (
-                  <div className="absolute inset-0 bg-black/30" />
+            <SwiperSlide key={slide.id}>
+              <div className={`relative h-full w-full ${slide.bgColor}`}>
+                {slide.image && (
+                  <img
+                    src={slide.image}
+                    alt={slide.title}
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
                 )}
+                <div className="absolute inset-0 bg-black/30" />
                 <div className="relative h-full flex items-center">
                   <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <motion.div
