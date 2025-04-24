@@ -1,13 +1,17 @@
 import { Link } from 'react-router-dom';
 import { Heart, ShoppingCart } from 'lucide-react';
 import { useApp } from '../context/AppContext';
+import { ROUTES } from '../lib/constants';
 
 const ProductCard = ({ product }) => {
   const { addToCart, addToWishlist } = useApp();
 
   return (
     <div className="group relative bg-white rounded-xl shadow-card hover:shadow-card-hover transition-all overflow-hidden">
-      <Link to={`/products/${product.id}`}>
+      <Link
+        to={`${ROUTES.PRODUCTS}/${product.id}`}
+        className="group relative block overflow-hidden rounded-lg"
+      >
         <div className="aspect-square overflow-hidden">
           <img
             src={product.image}
@@ -34,10 +38,11 @@ const ProductCard = ({ product }) => {
             </button>
           </div>
         </div>
-        <Link to={`/products/${product.id}`}>
-          <h3 className="font-medium text-gray-900 mb-2 hover:text-primary transition-colors">
-            {product.name}
-          </h3>
+        <Link
+          to={`${ROUTES.PRODUCTS}/${product.id}`}
+          className="font-medium text-gray-900 mb-2 hover:text-primary transition-colors"
+        >
+          {product.name}
         </Link>
         <p className="text-lg font-semibold text-gray-900">
           {product.price.toLocaleString()}원

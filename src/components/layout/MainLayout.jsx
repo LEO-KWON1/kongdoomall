@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ShoppingBag, User, Heart, Search, Menu, X, ChevronRight } from 'lucide-react'
 import Button from '../common/Button'
+import { ROUTES } from '../../lib/constants'
 
 const MainLayout = ({ children }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -26,31 +27,31 @@ const MainLayout = ({ children }) => {
     {
       title: '쇼핑',
       items: [
-        { name: '전체상품', link: '/products', description: '다양한 상품을 만나보세요' },
-        { name: '신상품', link: '/new-arrivals', description: '새로 입고된 최신 상품' },
-        { name: '베스트', link: '/best', description: '인기 있는 상품 모음' },
+        { name: '전체상품', link: ROUTES.PRODUCTS, description: '다양한 상품을 만나보세요' },
+        { name: '신상품', link: ROUTES.PRODUCTS + '?category=new', description: '새로 입고된 최신 상품' },
+        { name: '베스트', link: ROUTES.PRODUCTS + '?category=best', description: '인기 있는 상품 모음' },
       ]
     },
     {
       title: '브랜드',
       items: [
-        { name: '브랜드몰', link: '/brand-zone', description: '프리미엄 브랜드관' },
-        { name: '브랜드 랭킹', link: '/brand-ranking', description: '인기 브랜드 순위' },
+        { name: '브랜드몰', link: ROUTES.BRAND_ZONE, description: '프리미엄 브랜드관' },
+        { name: '브랜드 랭킹', link: ROUTES.BRAND_ZONE + '/ranking', description: '인기 브랜드 순위' },
       ]
     },
     {
       title: '마케팅',
       items: [
-        { name: '파트너스', link: '/partners', description: '파트너스 전용 서비스' },
-        { name: 'SNS 마케팅', link: '/social-marketing', description: '효과적인 마케팅 도구' },
+        { name: '파트너스', link: ROUTES.PARTNERS, description: '파트너스 전용 서비스' },
+        { name: 'SNS 마케팅', link: ROUTES.SOCIAL_MARKETING, description: '효과적인 마케팅 도구' },
       ]
     },
     {
       title: '고객지원',
       items: [
-        { name: '공지사항', link: '/notice', description: '중요 소식을 확인하세요' },
-        { name: '자주 묻는 질문', link: '/faq', description: '궁금한 점을 해결하세요' },
-        { name: '고객센터', link: '/contact', description: '도움이 필요하시나요?' },
+        { name: '공지사항', link: ROUTES.NOTICE, description: '중요 소식을 확인하세요' },
+        { name: '자주 묻는 질문', link: ROUTES.FAQ, description: '궁금한 점을 해결하세요' },
+        { name: '고객센터', link: ROUTES.CONTACT, description: '도움이 필요하시나요?' },
       ]
     }
   ]
@@ -91,7 +92,13 @@ const MainLayout = ({ children }) => {
                   variant="ghost"
                   size="md"
                   as={Link}
-                  to={`/${item === '브랜드몰' ? 'brand-zone' : item === '파트너스' ? 'partners' : 'social-marketing'}`}
+                  to={
+                    item === '브랜드몰'
+                      ? ROUTES.BRAND_ZONE
+                      : item === '파트너스'
+                      ? ROUTES.PARTNERS
+                      : ROUTES.SOCIAL_MARKETING
+                  }
                   className="!px-2 hover:!bg-transparent"
                 >
                   <span className="relative">
@@ -117,7 +124,7 @@ const MainLayout = ({ children }) => {
                 size="sm"
                 rounded
                 as={Link}
-                to="/wishlist"
+                to={ROUTES.WISHLIST}
                 aria-label="위시리스트"
               >
                 <Heart className="w-5 h-5" />
@@ -127,7 +134,7 @@ const MainLayout = ({ children }) => {
                 size="sm"
                 rounded
                 as={Link}
-                to="/cart"
+                to={ROUTES.CART}
                 aria-label="장바구니"
               >
                 <ShoppingBag className="w-5 h-5" />
@@ -137,7 +144,7 @@ const MainLayout = ({ children }) => {
                 size="sm"
                 rounded
                 as={Link}
-                to="/login"
+                to={ROUTES.LOGIN}
                 aria-label="로그인"
               >
                 <User className="w-5 h-5" />
@@ -242,11 +249,17 @@ const MainLayout = ({ children }) => {
             </div>
             <div>
               <h4 className="text-sm font-semibold mb-4 text-gray-300">회사정보</h4>
-              <ul className="space-y-2 text-sm text-gray-400">
-                <li>회사명: 콩두몰</li>
-                <li>대표: 권혁재</li>
-                <li>사업자등록번호: 123-45-67890</li>
-              </ul>
+              <div className="flex flex-col gap-2">
+                <Link to={ROUTES.ABOUT} className="hover:underline">
+                  회사소개
+                </Link>
+                <Link to={ROUTES.TERMS} className="hover:underline">
+                  이용약관
+                </Link>
+                <Link to={ROUTES.PRIVACY} className="hover:underline">
+                  개인정보처리방침
+                </Link>
+              </div>
             </div>
             <div>
               <h4 className="text-sm font-semibold mb-4 text-gray-300">소셜 미디어</h4>

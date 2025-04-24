@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { Instagram, Facebook, Youtube } from 'lucide-react'
+import { ROUTES } from '../lib/constants'
 
 const Footer = () => {
   return (
@@ -34,19 +35,19 @@ const Footer = () => {
             </h3>
             <ul className="space-y-2">
               <li>
-                <Link to="/about" className="text-kong-brown-300 hover:text-toad-green-400 transition-colors duration-200 flex items-center group">
+                <Link to={ROUTES.ABOUT} className="text-kong-brown-300 hover:text-toad-green-400 transition-colors duration-200 flex items-center group">
                   <span className="w-1.5 h-1.5 bg-kong-brown-300 rounded-full mr-2 group-hover:bg-toad-green-400 transition-colors duration-200"></span>
                   회사소개
                 </Link>
               </li>
               <li>
-                <Link to="/terms" className="text-kong-brown-300 hover:text-toad-green-400 transition-colors duration-200 flex items-center group">
+                <Link to={ROUTES.TERMS} className="text-kong-brown-300 hover:text-toad-green-400 transition-colors duration-200 flex items-center group">
                   <span className="w-1.5 h-1.5 bg-kong-brown-300 rounded-full mr-2 group-hover:bg-toad-green-400 transition-colors duration-200"></span>
                   이용약관
                 </Link>
               </li>
               <li>
-                <Link to="/privacy" className="text-kong-brown-300 hover:text-toad-green-400 transition-colors duration-200 flex items-center group">
+                <Link to={ROUTES.PRIVACY} className="text-kong-brown-300 hover:text-toad-green-400 transition-colors duration-200 flex items-center group">
                   <span className="w-1.5 h-1.5 bg-kong-brown-300 rounded-full mr-2 group-hover:bg-toad-green-400 transition-colors duration-200"></span>
                   개인정보처리방침
                 </Link>

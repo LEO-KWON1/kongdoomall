@@ -4,6 +4,7 @@ import { useApp } from '../context/AppContext'
 import { useAuth } from '../context/AuthContext'
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { ROUTES } from '../lib/constants'
 
 const Navbar = () => {
   const { cart, wishlist } = useApp()
@@ -11,39 +12,38 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   const navigation = [
-    { name: '홈', href: '/' },
-    { name: '상품', href: '/products' },
-    { name: '브랜드존', href: '/brand-zone' },
-    { name: '파트너스', href: '/partners' },
-    { name: '마케팅', href: '/marketing' },
+    { name: '홈', href: ROUTES.HOME },
+    { name: '상품', href: ROUTES.PRODUCTS },
+    { name: '브랜드존', href: ROUTES.BRAND_ZONE },
+    { name: '파트너스', href: ROUTES.PARTNERS },
+    { name: '마케팅', href: ROUTES.MARKETING },
   ]
 
   const menuItems = [
     {
       title: '쇼핑',
       items: [
-        { name: '홈', href: '/' },
-        { name: '전체상품', href: '/products' },
-        { name: '베스트', href: '/best' },
-        { name: '신상품', href: '/new' },
+        { name: '홈', href: ROUTES.HOME },
+        { name: '전체상품', href: ROUTES.PRODUCTS },
+        { name: '베스트', href: ROUTES.PRODUCTS + '?category=best' },
+        { name: '신상품', href: ROUTES.PRODUCTS + '?category=new' },
       ]
     },
     {
       title: '마이페이지',
       items: [
-        { name: '장바구니', href: '/cart' },
-        { name: '찜한상품', href: '/wishlist' },
-        { name: '주문내역', href: '/orders' },
-        { name: '알림', href: '/notifications' },
+        { name: '장바구니', href: ROUTES.CART },
+        { name: '찜한상품', href: ROUTES.WISHLIST },
+        { name: '마이콩두', href: ROUTES.MY_KONGDOO },
       ]
     },
     {
       title: '파트너스',
       items: [
-        { name: '파트너스 홈', href: '/partners' },
-        { name: '수익 현황', href: '/partners/earnings' },
-        { name: '파트너스 상품', href: '/partners/products' },
-        { name: '마케팅 도구', href: '/partners/marketing' },
+        { name: '파트너스 홈', href: ROUTES.PARTNERS },
+        { name: '수익 현황', href: ROUTES.PARTNERS_EARNINGS },
+        { name: '파트너스 상품', href: ROUTES.PARTNERS_PRODUCTS },
+        { name: '마케팅 도구', href: ROUTES.SOCIAL_MARKETING },
       ]
     }
   ]
