@@ -1,10 +1,26 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { Link, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ShoppingBag, User, Heart, Search, Menu, X } from 'lucide-react'
+import { ShoppingBag, User, Heart, Search, Menu, X, ChevronRight } from 'lucide-react'
+import Button from '../common/Button'
 
 const MainLayout = ({ children }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isScrolled, setIsScrolled] = useState(false)
+  const location = useLocation()
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 0)
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  useEffect(() => {
+    setIsMenuOpen(false)
+  }, [location])
 
   const menuItems = [
     {
@@ -40,60 +56,92 @@ const MainLayout = ({ children }) => {
   ]
 
   return (
-    <div className="min-h-screen bg-kong-white relative">
+    <div className="min-h-screen bg-white relative">
       {/* 헤더 */}
-      <header className="fixed top-0 left-0 right-0 bg-kong-white/95 backdrop-blur-sm z-[100] border-b border-kong-gray-200">
+      <header 
+        className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-300 ${
+          isScrolled 
+            ? 'bg-white/95 backdrop-blur-sm shadow-sm' 
+            : 'bg-transparent'
+        }`}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* 좌측: 햄버거 메뉴와 로고 */}
             <div className="flex items-center space-x-4">
-              <button
+              <Button
+                variant="ghost"
+                size="sm"
+                rounded
                 onClick={() => setIsMenuOpen(true)}
-                className="p-2 hover:bg-kong-gray-100 rounded-full transition-colors"
+                aria-label="메뉴 열기"
               >
-                <Menu size={24} />
-              </button>
+                <Menu className="w-6 h-6" />
+              </Button>
               <Link to="/" className="flex items-center">
-                <span className="text-2xl font-bold text-kong-black">KONGDOOMALL</span>
+                <span className="text-2xl font-bold">KONGDOOMALL</span>
               </Link>
             </div>
 
             {/* 중앙: 주요 네비게이션 */}
-            <nav className="hidden md:flex items-center space-x-8">
-              <Link 
-                to="/brand-zone" 
-                className="text-kong-gray-700 hover:text-kong-gold transition-colors font-medium"
-              >
-                브랜드몰
-              </Link>
-              <Link 
-                to="/partners" 
-                className="text-kong-gray-700 hover:text-kong-gold transition-colors font-medium"
-              >
-                파트너스
-              </Link>
-              <Link 
-                to="/social-marketing" 
-                className="text-kong-gray-700 hover:text-kong-gold transition-colors font-medium"
-              >
-                SNS마케팅
-              </Link>
+            <nav className="hidden md:flex items-center space-x-4">
+              {['브랜드몰', '파트너스', 'SNS마케팅'].map((item) => (
+                <Button
+                  key={item}
+                  variant="ghost"
+                  size="md"
+                  as={Link}
+                  to={`/${item === '브랜드몰' ? 'brand-zone' : item === '파트너스' ? 'partners' : 'social-marketing'}`}
+                  className="!px-2 hover:!bg-transparent"
+                >
+                  <span className="relative">
+                    {item}
+                    <span className="absolute left-0 right-0 bottom-0 h-0.5 bg-primary scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
+                  </span>
+                </Button>
+              ))}
             </nav>
 
             {/* 우측 아이콘 메뉴 */}
-            <div className="flex items-center space-x-4">
-              <button className="p-2 text-kong-gray-700 hover:text-kong-gold transition-colors">
-                <Search size={20} />
-              </button>
-              <Link to="/wishlist" className="p-2 text-kong-gray-700 hover:text-kong-gold transition-colors">
-                <Heart size={20} />
-              </Link>
-              <Link to="/cart" className="p-2 text-kong-gray-700 hover:text-kong-gold transition-colors">
-                <ShoppingBag size={20} />
-              </Link>
-              <Link to="/login" className="p-2 text-kong-gray-700 hover:text-kong-gold transition-colors">
-                <User size={20} />
-              </Link>
+            <div className="flex items-center space-x-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                rounded
+                aria-label="검색"
+              >
+                <Search className="w-5 h-5" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                rounded
+                as={Link}
+                to="/wishlist"
+                aria-label="위시리스트"
+              >
+                <Heart className="w-5 h-5" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                rounded
+                as={Link}
+                to="/cart"
+                aria-label="장바구니"
+              >
+                <ShoppingBag className="w-5 h-5" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                rounded
+                as={Link}
+                to="/login"
+                aria-label="로그인"
+              >
+                <User className="w-5 h-5" />
+              </Button>
             </div>
           </div>
         </div>
@@ -117,34 +165,49 @@ const MainLayout = ({ children }) => {
               transition={{ type: 'tween', duration: 0.3 }}
               className="fixed top-0 left-0 bottom-0 w-[330px] bg-white z-[120] overflow-y-auto"
             >
-              <div className="p-4 border-b bg-gradient-to-r from-kong-gold/10 to-transparent">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-xl font-bold">전체 메뉴</h2>
-                  <button
-                    onClick={() => setIsMenuOpen(false)}
-                    className="p-2 hover:bg-kong-gray-100 rounded-full"
-                  >
-                    <X size={24} />
-                  </button>
+              <div className="sticky top-0 z-10 bg-white">
+                <div className="p-4 border-b bg-gradient-to-r from-primary/5 to-transparent">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-xl font-bold">전체 메뉴</h2>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      rounded
+                      onClick={() => setIsMenuOpen(false)}
+                      aria-label="메뉴 닫기"
+                    >
+                      <X className="w-6 h-6" />
+                    </Button>
+                  </div>
                 </div>
               </div>
 
               <div className="py-4">
                 {menuItems.map((section, index) => (
                   <div key={section.title} className={index > 0 ? 'mt-6' : ''}>
-                    <div className="px-4 py-2 bg-kong-gray-50 text-sm font-medium text-kong-gray-500">
+                    <div className="px-4 py-2 bg-gray-50 text-sm font-medium text-gray-500">
                       {section.title}
                     </div>
                     {section.items.map((item) => (
-                      <Link
+                      <Button
                         key={item.name}
+                        variant="ghost"
+                        size="lg"
+                        as={Link}
                         to={item.link}
-                        className="block px-4 py-3 hover:bg-kong-gray-50 transition-colors"
-                        onClick={() => setIsMenuOpen(false)}
+                        fullWidth
+                        className="justify-between !rounded-none !p-4 hover:!bg-gray-50"
                       >
-                        <div className="font-medium text-kong-gray-900">{item.name}</div>
-                        <div className="text-sm text-kong-gray-500 mt-0.5">{item.description}</div>
-                      </Link>
+                        <div className="text-left">
+                          <div className="font-medium text-gray-900 group-hover:text-primary transition-colors">
+                            {item.name}
+                          </div>
+                          <div className="text-sm text-gray-500 mt-0.5">
+                            {item.description}
+                          </div>
+                        </div>
+                        <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-primary transition-colors" />
+                      </Button>
                     ))}
                   </div>
                 ))}
@@ -155,53 +218,77 @@ const MainLayout = ({ children }) => {
       </AnimatePresence>
 
       {/* 메인 컨텐츠 */}
-      <main className="pt-16 relative z-10">
+      <main className="pt-16">
         {children}
       </main>
 
       {/* 푸터 */}
-      <footer className="bg-kong-black text-kong-white">
+      <footer className="bg-gray-900 text-white mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
               <h3 className="text-lg font-bold mb-4">KONGDOOMALL</h3>
-              <p className="text-kong-gray-400">
+              <p className="text-gray-400 text-sm leading-relaxed">
                 고급 브랜드몰 스타일의 쇼핑 경험을 제공하는 하이브리드 마켓플랫폼
               </p>
             </div>
             <div>
-              <h4 className="text-sm font-semibold mb-4">고객센터</h4>
-              <ul className="space-y-2 text-sm text-kong-gray-400">
+              <h4 className="text-sm font-semibold mb-4 text-gray-300">고객센터</h4>
+              <ul className="space-y-2 text-sm text-gray-400">
                 <li>전화: 010-7123-6612</li>
                 <li>이메일: kojkhj614@naver.com</li>
                 <li>운영시간: 평일 10:00 - 18:00</li>
               </ul>
             </div>
             <div>
-              <h4 className="text-sm font-semibold mb-4">회사정보</h4>
-              <ul className="space-y-2 text-sm text-kong-gray-400">
+              <h4 className="text-sm font-semibold mb-4 text-gray-300">회사정보</h4>
+              <ul className="space-y-2 text-sm text-gray-400">
                 <li>회사명: 콩두몰</li>
-                <li>대표: 총민혁</li>
+                <li>대표: 권혁재</li>
                 <li>사업자등록번호: 123-45-67890</li>
               </ul>
             </div>
             <div>
-              <h4 className="text-sm font-semibold mb-4">소셜 미디어</h4>
-              <div className="flex space-x-4">
-                <a href="#" className="text-kong-gray-400 hover:text-kong-gold transition-colors">
+              <h4 className="text-sm font-semibold mb-4 text-gray-300">소셜 미디어</h4>
+              <div className="flex space-x-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  as="a"
+                  href="#"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="!text-gray-400 hover:!text-primary"
+                >
                   Instagram
-                </a>
-                <a href="#" className="text-kong-gray-400 hover:text-kong-gold transition-colors">
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  as="a"
+                  href="#"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="!text-gray-400 hover:!text-primary"
+                >
                   Facebook
-                </a>
-                <a href="#" className="text-kong-gray-400 hover:text-kong-gold transition-colors">
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  as="a"
+                  href="#"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="!text-gray-400 hover:!text-primary"
+                >
                   YouTube
-                </a>
+                </Button>
               </div>
             </div>
           </div>
-          <div className="mt-8 pt-8 border-t border-kong-gray-800 text-sm text-kong-gray-400">
-            © 2024 KONGDOOMALL. All rights reserved.
+          <div className="mt-8 pt-8 border-t border-gray-800 text-sm text-gray-400">
+            <p>&copy; 2024 KONGDOOMALL. All rights reserved.</p>
           </div>
         </div>
       </footer>

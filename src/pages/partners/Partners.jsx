@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { ShoppingCart, DollarSign, ArrowRight, Users, Target, Award } from 'lucide-react'
-import Button from '../components/common/Button'
+import Button from '../../components/common/Button'
 
 const Partners = () => {
   return (

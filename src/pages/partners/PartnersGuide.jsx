@@ -1,4 +1,4 @@
-import { useAuth } from '../context/AuthContext'
+import { useAuth } from '../../context/AuthContext'
 import { Link } from 'react-router-dom'
 import { CheckCircle, ArrowRight } from 'lucide-react'
 

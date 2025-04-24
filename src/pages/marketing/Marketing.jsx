@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { TrendingUp, Users, Target, BarChart, Share2, Award } from 'lucide-react';
-import Button from '../components/common/Button';
+import Button from '../../components/common/Button';
 
 const Marketing = () => {
   return (

@@ -1,5 +1,5 @@
-import { useAuth } from '../context/AuthContext'
-import { useApp } from '../context/AppContext'
+import { useAuth } from '../../context/AuthContext'
+import { useApp } from '../../context/AppContext'
 import { Link } from 'react-router-dom'
 import { Copy, Share2 } from 'lucide-react'
 

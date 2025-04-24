@@ -1,7 +1,7 @@
-import { useAuth } from '../context/AuthContext'
-import { useApp } from '../context/AppContext'
+import { useAuth } from '../../context/AuthContext'
+import { useApp } from '../../context/AppContext'
 import { Link } from 'react-router-dom'
-import Button from '../components/ui/button'
+import Button from '../../components/common/Button'
 import { DollarSign, TrendingUp, Calendar } from 'lucide-react'
 
 const PartnersEarnings = () => {

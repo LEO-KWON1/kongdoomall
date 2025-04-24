@@ -43,23 +43,24 @@ const Home = () => {
   const heroImages = [
     {
       id: 1,
-      image: '/images/hero-1.jpg',
+      image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=2070',
       title: '프리미엄 브랜드를 만나다',
       description: '최고의 품질과 스타일을 제공하는 콩두몰',
-      bgColor: 'bg-gray-200',
+      bgColor: 'bg-gray-100',
     },
     {
       id: 2,
-      image: '/images/hero-2.jpg',
+      image: 'https://images.unsplash.com/photo-1445205170230-053b83016050?q=80&w=2071',
       title: '새로운 컬렉션 출시',
       description: '2024 봄/여름 신상품을 만나보세요',
-      bgColor: 'bg-gray-300',
+      bgColor: 'bg-gray-200',
     },
     {
       id: 3,
+      image: 'https://images.unsplash.com/photo-1469334031218-e382a71b716b?q=80&w=2070',
       title: '특별한 혜택',
       description: '신규 회원을 위한 다양한 할인 혜택',
-      bgColor: 'bg-gray-800',
+      bgColor: 'bg-gray-300',
     },
   ];
 
@@ -72,37 +73,45 @@ const Home = () => {
           spaceBetween={0}
           slidesPerView={1}
           autoplay={{ delay: 5000, disableOnInteraction: false }}
-          pagination={{ clickable: true }}
-          navigation
+          pagination={{ 
+            clickable: true,
+            bulletActiveClass: 'swiper-pagination-bullet-active !bg-primary',
+          }}
+          navigation={{
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+          }}
           loop={true}
-          className="h-full"
+          className="h-full group"
         >
           {heroImages.map((slide) => (
             <SwiperSlide key={slide.id}>
               <div className={`relative h-full w-full ${slide.bgColor}`}>
-                {slide.image && (
-                  <img
-                    src={slide.image}
-                    alt={slide.title}
-                    className="absolute inset-0 w-full h-full object-cover"
-                  />
-                )}
-                <div className="absolute inset-0 bg-black/30" />
+                <img
+                  src={slide.image}
+                  alt={slide.title}
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent" />
                 <div className="relative h-full flex items-center">
                   <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.8 }}
-                      className="text-white"
+                      className="text-white max-w-2xl"
                     >
                       <h1 className="text-4xl md:text-6xl font-bold mb-4">
                         {slide.title}
                       </h1>
-                      <p className="text-xl md:text-2xl mb-8">
+                      <p className="text-xl md:text-2xl mb-8 text-white/90">
                         {slide.description}
                       </p>
-                      <Button size="lg" variant="primary">
+                      <Button 
+                        size="lg" 
+                        variant="primary"
+                        className="hover:scale-105 transition-transform duration-300"
+                      >
                         쇼핑하기
                       </Button>
                     </motion.div>
@@ -111,18 +120,26 @@ const Home = () => {
               </div>
             </SwiperSlide>
           ))}
+          <div className="swiper-button-prev !text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <div className="swiper-button-next !text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         </Swiper>
       </section>
 
       {/* Featured Products */}
       <section className="py-16 px-4 max-w-7xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
-          <h2 className="text-2xl font-semibold text-gray-900">추천 상품</h2>
+        <div className="flex items-center justify-between mb-12">
+          <div>
+            <h2 className="text-3xl font-bold text-gray-900 mb-2">추천 상품</h2>
+            <p className="text-gray-600">콩두몰이 엄선한 프리미엄 상품</p>
+          </div>
           <Link
             to="/products"
-            className="text-primary hover:text-primary-dark"
+            className="text-primary hover:text-primary-dark transition-colors duration-300 font-medium flex items-center gap-2"
           >
             전체보기
+            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M9 6L15 12L9 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
           </Link>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
@@ -132,19 +149,21 @@ const Home = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="bg-white rounded-xl shadow-card hover:shadow-card-hover transition-all overflow-hidden"
+              className="group bg-white rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden"
             >
-              <Link to={`/products/${product.id}`}>
+              <Link to={`/products/${product.id}`} className="block">
                 <div className="aspect-square overflow-hidden">
                   <img
                     src={product.image}
                     alt={product.name}
-                    className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                   />
                 </div>
                 <div className="p-4">
-                  <p className="text-sm text-gray-500">{product.brand}</p>
-                  <h3 className="font-medium text-gray-900">{product.name}</h3>
+                  <p className="text-sm text-gray-500 mb-1">{product.brand}</p>
+                  <h3 className="font-medium text-gray-900 group-hover:text-primary transition-colors duration-300">
+                    {product.name}
+                  </h3>
                   <p className="text-lg font-semibold text-primary mt-2">
                     {product.price.toLocaleString()}원
                   </p>
@@ -156,79 +175,81 @@ const Home = () => {
       </section>
 
       {/* Categories */}
-      <section className="py-16 px-4 max-w-7xl mx-auto">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">카테고리</h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            다양한 카테고리의 상품들을 만나보세요
-          </p>
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-          {[
-            { 
-              name: '의류',
-              icon: Shirt,
-              color: 'bg-[#FF6B6B]',
-              description: '트렌디한 의류',
-              image: 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?q=80&w=2070'
-            },
-            { 
-              name: '신발',
-              icon: Footprints,
-              color: 'bg-[#4ECDC4]',
-              description: '스타일리시한 신발',
-              image: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?q=80&w=2012'
-            },
-            { 
-              name: '가방',
-              icon: ShoppingBag,
-              color: 'bg-[#45B7D1]',
-              description: '품격있는 가방',
-              image: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?q=80&w=1935'
-            },
-            { 
-              name: '악세서리',
-              icon: Gem,
-              color: 'bg-[#96CEB4]',
-              description: '특별한 악세서리',
-              image: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?q=80&w=1887'
-            },
-          ].map((category, index) => (
-            <motion.div
-              key={category.name}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="group relative rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300"
-            >
-              <Link to={`/category/${category.name}`}>
-                <div className="aspect-square relative overflow-hidden">
-                  <img 
-                    src={category.image} 
-                    alt={category.name}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors duration-300" />
-                  
-                  <div className="absolute inset-0 p-6 flex flex-col justify-between">
-                    <div className="flex items-center">
-                      <span className={`${category.color} p-3 rounded-2xl`}>
-                        <category.icon className="w-6 h-6 text-white" />
-                      </span>
-                    </div>
-                    <div>
-                      <h3 className="text-2xl font-bold text-white mb-2 group-hover:translate-x-2 transition-transform duration-300">
-                        {category.name}
-                      </h3>
-                      <p className="text-white/80 text-sm group-hover:translate-x-2 transition-transform duration-300 delay-75">
-                        {category.description}
-                      </p>
+      <section className="py-16 px-4 bg-gray-50">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">카테고리</h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              다양한 카테고리의 상품들을 만나보세요
+            </p>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {[
+              { 
+                name: '의류',
+                icon: Shirt,
+                color: 'bg-[#FF6B6B]',
+                description: '트렌디한 의류',
+                image: 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?q=80&w=2070'
+              },
+              { 
+                name: '신발',
+                icon: Footprints,
+                color: 'bg-[#4ECDC4]',
+                description: '스타일리시한 신발',
+                image: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?q=80&w=2012'
+              },
+              { 
+                name: '가방',
+                icon: ShoppingBag,
+                color: 'bg-[#45B7D1]',
+                description: '품격있는 가방',
+                image: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?q=80&w=1935'
+              },
+              { 
+                name: '악세서리',
+                icon: Gem,
+                color: 'bg-[#96CEB4]',
+                description: '특별한 악세서리',
+                image: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?q=80&w=1887'
+              },
+            ].map((category, index) => (
+              <motion.div
+                key={category.name}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="group relative rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500"
+              >
+                <Link to={`/category/${category.name}`} className="block">
+                  <div className="aspect-square relative overflow-hidden">
+                    <img 
+                      src={category.image} 
+                      alt={category.name}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent transition-opacity duration-300" />
+                    
+                    <div className="absolute inset-0 p-6 flex flex-col justify-between">
+                      <div className="flex items-center">
+                        <span className={`${category.color} p-3 rounded-2xl backdrop-blur-sm bg-opacity-80`}>
+                          <category.icon className="w-6 h-6 text-white" />
+                        </span>
+                      </div>
+                      <div>
+                        <h3 className="text-2xl font-bold text-white mb-2 group-hover:translate-x-2 transition-transform duration-300">
+                          {category.name}
+                        </h3>
+                        <p className="text-white/90 text-sm group-hover:translate-x-2 transition-transform duration-300 delay-75">
+                          {category.description}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </Link>
-            </motion.div>
-          ))}
+                </Link>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
     </>
