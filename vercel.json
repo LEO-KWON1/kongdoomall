@@ -3,18 +3,22 @@
   "builds": [
     {
       "src": "package.json",
-      "use": "@vercel/node"
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist",
+        "buildCommand": "npm install && npm run build",
+        "installCommand": "npm install"
+      }
     }
   ],
   "routes": [
     {
+      "src": "/assets/(.*)",
+      "dest": "/assets/$1"
+    },
+    {
       "src": "/(.*)",
-      "dest": "/"
+      "dest": "/index.html"
     }
-  ],
-  "build": {
-    "env": {
-      "NODE_OPTIONS": "--max_old_space_size=4096"
-    }
-  }
+  ]
 } 
