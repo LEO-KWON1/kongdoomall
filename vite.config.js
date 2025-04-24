@@ -12,7 +12,8 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src')
+      '@': path.resolve(__dirname, './src'),
+      'react': path.resolve(__dirname, './node_modules/react')
     }
   },
   build: {
@@ -20,10 +21,14 @@ export default defineConfig({
     sourcemap: false,
     rollupOptions: {
       output: {
-        entryFileNames: 'assets/[name].js',
-        chunkFileNames: 'assets/[name].js',
-        assetFileNames: 'assets/[name].[ext]'
+        manualChunks: {
+          'vendor': ['react', 'react-dom', 'react-router-dom'],
+          'ui': ['@headlessui/react', '@heroicons/react', 'lucide-react']
+        }
       }
     }
+  },
+  optimizeDeps: {
+    include: ['react', 'react-dom']
   }
 }) 
