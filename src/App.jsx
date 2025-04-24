@@ -20,15 +20,15 @@ import ForgotPassword from './pages/ForgotPassword'
 import NotFound from './pages/NotFound'
 
 // Partners
-import Partners from './pages/partners/Partners'
-import PartnersGuide from './pages/partners/PartnersGuide'
-import PartnersLinks from './pages/partners/PartnersLinks'
-import PartnersEarnings from './pages/partners/PartnersEarnings'
-import PartnersProducts from './pages/partners/PartnersProducts'
+import Partners from './pages/Partners'
+import PartnersGuide from './pages/PartnersGuide'
+import PartnersLinks from './pages/PartnersLinks'
+import PartnersEarnings from './pages/PartnersEarnings'
+import PartnersProducts from './pages/PartnersProducts'
 
 // Marketing
-import Marketing from './pages/marketing/Marketing'
-import SocialMarketing from './pages/marketing/SocialMarketing'
+import Marketing from './pages/Marketing'
+import SocialMarketing from './pages/SocialMarketing'
 
 function App() {
   return (
