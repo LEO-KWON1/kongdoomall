@@ -75,7 +75,7 @@ const SocialMarketing = () => {
             className="text-center"
           >
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-              SNS 마케팅 + 유통 통합 대행
+              SNS 마케팅 통합 대행
             </h1>
             <p className="text-xl md:text-2xl text-gray-600 mb-4">
               "상품만 준비하세요.<br />
